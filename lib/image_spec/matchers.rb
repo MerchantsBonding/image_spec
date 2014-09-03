@@ -14,13 +14,13 @@ module ImageSpec
     end
 
     def verify_files_exist_and_have_matching_stats
-      raise "Expected image path is blank!" unless @expected
-      raise "Actual image path is blank!"   unless @actual
+      raise "Expected image path is blank!"       unless @expected
+      raise "Actual image path is blank!"         unless @actual
       [@expected, @actual].each do |path|
-        raise "No such file! (#{path})"     unless File.exists?(path.to_s)
+        raise "No such file! (#{path})"           unless File.exists?(path.to_s)
       end
-      raise "Files are not the same type!"  unless same_type?
-      raise "Files are not the same size!"  unless same_size?
+      raise "Files are not the same image type!"  unless same_type?
+      raise "Images are not the same dimensions!" unless same_size?
     end
 
     def score
@@ -85,7 +85,7 @@ RSpec::Matchers.define(:have_image_that_looks_like) do |expected_file_path|
     any_images_look_similar?
   end
 
-  failure_message_for_should do
+  failure_message do
     "Expected one of the images on the page to look similar to #{expected_file_path}"
   end
 
