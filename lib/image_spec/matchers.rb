@@ -13,26 +13,31 @@ module ImageSpec
       score and (score < @max_acceptable_score)
     end
 
-    def score
-      raise "Expected image path is blank" unless @expected
-      raise "Actual image path is blank" unless @actual
-
+    def verify_files_exist_and_have_matching_stats
+      raise "Expected image path is blank!" unless @expected
+      raise "Actual image path is blank!"   unless @actual
       [@expected, @actual].each do |path|
-        raise "No such file! (#{path})" unless File.exists?(path.to_s)
+        raise "No such file! (#{path})"     unless File.exists?(path.to_s)
       end
+      raise "Files are not the same type!"  unless same_type?
+      raise "Files are not the same size!"  unless same_size?
+    end
 
-      raise "Files are not the same type!" unless same_type?
-
-      raise "Files are not the same size" unless same_size?
+    def score
+      verify_files_exist_and_have_matching_stats
 
       tempfile = Tempfile.new("diff")
-
       cmd = "compare -verbose -metric mae #{@expected} #{@actual} #{tempfile.path}"
 
       Open3.popen3(cmd) do |stdin, stdout, stderr|
-        output = stderr.read
-        return false if output =~ /images too dissimilar/
+        score_from_compare_output(stderr.read)
+      end
+    end
 
+    def score_from_compare_output(output)
+      if output =~ /images too dissimilar/
+        nil
+      else
         output.match /^\s*all:.*\((.*)\)$/
         $1.to_f
       end
@@ -124,4 +129,3 @@ RSpec::Matchers.define(:have_image_that_looks_like) do |expected_file_path|
     end
   end
 end
-
