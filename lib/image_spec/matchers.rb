@@ -10,8 +10,7 @@ module ImageSpec
     end
 
     def look_similar?
-      @score = score
-      @score and (@score < @max_acceptable_score)
+      score and (score < @max_acceptable_score)
     end
 
     def verify_files_exist_and_have_matching_stats
@@ -25,14 +24,16 @@ module ImageSpec
     end
 
     def score
+      return @score if @score
       verify_files_exist_and_have_matching_stats
 
       tempfile = Tempfile.new("diff")
       cmd = "compare -verbose -metric mae #{@expected} #{@actual} #{tempfile.path}"
 
       Open3.popen3(cmd) do |stdin, stdout, stderr|
-        score_from_compare_output(stderr.read)
+        @score = score_from_compare_output(stderr.read)
       end
+      @score
     end
 
     def score_from_compare_output(output)
@@ -75,7 +76,7 @@ RSpec::Matchers.define(:look_like) do |exected_file_path|
   end
 
   failure_message do
-    "Expected #{@actual} to look like #{@expected}. Comparison score should be less than #{max_acceptable_score} but was #{@score}."
+    "Expected #{@actual} to look like #{@expected}. Comparison score should be less than #{max_acceptable_score} but was #{comparison.score}."
   end
 end
 
