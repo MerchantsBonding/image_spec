@@ -10,7 +10,8 @@ module ImageSpec
     end
 
     def look_similar?
-      score and (score < @max_acceptable_score)
+      @score = score
+      @score and (@score < @max_acceptable_score)
     end
 
     def verify_files_exist_and_have_matching_stats
@@ -30,7 +31,7 @@ module ImageSpec
       cmd = "compare -verbose -metric mae #{@expected} #{@actual} #{tempfile.path}"
 
       Open3.popen3(cmd) do |stdin, stdout, stderr|
-        score_from_compare_output(stderr.read)
+        @score = score_from_compare_output(stderr.read)
       end
     end
 
