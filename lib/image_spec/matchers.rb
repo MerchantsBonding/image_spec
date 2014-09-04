@@ -31,7 +31,7 @@ module ImageSpec
       cmd = "compare -verbose -metric mae #{@expected} #{@actual} #{tempfile.path}"
 
       Open3.popen3(cmd) do |stdin, stdout, stderr|
-        @score = score_from_compare_output(stderr.read)
+        score_from_compare_output(stderr.read)
       end
     end
 
@@ -75,7 +75,7 @@ RSpec::Matchers.define(:look_like) do |exected_file_path|
   end
 
   failure_message do
-    "Expected #{@actual} to look like #{@expected}. Comparison score should be less than #{max_acceptable_score} but was #{@score}"
+    "Expected #{@actual} to look like #{@expected}. Comparison score should be less than #{max_acceptable_score} but was #{@score}."
   end
 end
 
