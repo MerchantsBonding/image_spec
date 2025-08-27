@@ -17,7 +17,7 @@ module ImageSpec
       raise "Expected image path is blank!"       unless @expected
       raise "Actual image path is blank!"         unless @actual
       [@expected, @actual].each do |path|
-        raise "No such file! (#{path})"           unless File.exists?(path.to_s)
+        raise "No such file! (#{path})"           unless File.exist?(path.to_s)
       end
       raise "Files are not the same image type!"  unless same_type?
       raise "Images are not the same dimensions!" unless same_size?
@@ -118,13 +118,13 @@ RSpec::Matchers.define(:have_image_that_looks_like) do |expected_file_path|
     clean_url = url.gsub(/\?\d+$/, '')
     if url =~ /^\/assets\//
       path = File.join(Rails.root, clean_url.gsub(/^\/assets\//, '/app/assets/images/'))
-      return path if File.exists?(path)
+      return path if File.exist?(path)
     elsif url =~ /^\/images\//
       asset_path = File.join(Rails.root, clean_url.gsub(/^\/images\//, '/app/assets/images/'))
-      return asset_path if File.exists?(asset_path)
+      return asset_path if File.exist?(asset_path)
     end
     rails_path = File.join(Rails.root, File.join('public', clean_url))
-    if File.exists?(rails_path)
+    if File.exist?(rails_path)
       rails_path
     else
       url
